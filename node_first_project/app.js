@@ -1,25 +1,29 @@
 // const http = require('http');
 
 const express = require('express');
+const dirname = require('./util/paths.js');
+const path = require('path');
+const errorcontroller = require('./controller/error.js');
 
 const app = express();
 
+app.set('view engine','ejs');
+app.set('views',path.join(dirname,'views'));
 const adminRoutes = require('./routes/admin.js');
 const shopeRoutes = require('./routes/shope.js');
-const dirname = require('./util/paths.js');
-const path = require('path');
+
+
+const bodyParser = require('body-parser');
 
 app.use(express.static(path.join(dirname,'public')));
+app.use(bodyParser.urlencoded({ extended: false  }));
 
 
 
 app.use(shopeRoutes);
 app.use('/admin',adminRoutes);
 
-app.use((req,res,next)=>{
-    res.status(404).sendFile(path.join(dirname,'views','404.html'));
-
-});
+app.use(errorcontroller.errorPage);
 
 
 // app.disable('etag');
